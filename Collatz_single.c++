@@ -9,7 +9,7 @@ using namespace std;
 #define MAX_BUF_SIZE 1048576
 #define INIT_BUF_SIZE 40
 #define MAX_GRP_BUF_SIZE 1048576
-#define DEMONIMATOR 10000 // group range
+#define GROUP_RANGE 10000 
 
 /**
  *  use the buffers to improve the performance for 3n + 1 problem.
@@ -126,13 +126,13 @@ int collatz_eval_helper(int i)
 
 
 // Compute the max cycle from i to j, 
-// e.g. [i,j] = [1, DEMONIMATOR - 1], [DEMONIMATOR, DEMONIMATOR * 2 - 1]
-// i and j have the same division result by DEMONIMATOR
+// e.g. [i,j] = [1, GROUP_RANGE - 1], [GROUP_RANGE, GROUP_RANGE * 2 - 1]
+// i and j have the same division result by GROUP_RANGE
 int collatz_eval_grp_helper (int i, int j)
 {
-    int idx = i/DEMONIMATOR;
+    int idx = i/GROUP_RANGE;
     int ret = 0;
-    if (idx == j/DEMONIMATOR)
+    if (idx == j/GROUP_RANGE)
     {
         ret = get_val(grp_buffer, MAX_GRP_BUF_SIZE, idx);
         if (ret == 0)
@@ -155,18 +155,18 @@ int collatz_eval_grp (int i, int j)
         j = tmp;
     }
 
-    int start = i / DEMONIMATOR;
-    int end  = j /DEMONIMATOR;
+    int start = i / GROUP_RANGE;
+    int end  = j /GROUP_RANGE;
 
     //std::cout <<"start " << start << " , " << end << std::endl;
     // get the max cycle for the middle groups
     for (int k = start + 1; k <= end - 1; k++)
     {
-        ret = collatz_eval_grp_helper(k * DEMONIMATOR, k * DEMONIMATOR + DEMONIMATOR - 1);
+        ret = collatz_eval_grp_helper(k * GROUP_RANGE, k * GROUP_RANGE + GROUP_RANGE - 1);
         max = std::max(max, ret);
     }
 
-    end = (i / DEMONIMATOR  + 1) * DEMONIMATOR - 1;
+    end = (i / GROUP_RANGE  + 1) * GROUP_RANGE - 1;
     //std::cout <<"i " << i << " , " << end  << " j " << j << std::endl;
     if (j <= end)
     {
@@ -179,7 +179,7 @@ int collatz_eval_grp (int i, int j)
         // in different group range
         ret = collatz_eval(i, end);
         max = std::max(max, ret);
-        ret = collatz_eval( j / DEMONIMATOR * DEMONIMATOR, j);
+        ret = collatz_eval( j / GROUP_RANGE * GROUP_RANGE, j);
         max = std::max(max, ret);
     }
 
